@@ -1,142 +1,203 @@
-import ClubsActionTypes from "../actionCreators/ClubsActionTypes";
-import { toast } from "react-toastify";
+import clubsActionTypes from '../actionCreators/ClubsActionTypes'
+import { setCacheObject,  getCacheObject  } from '../../helpers/globalHelpers/GlobalHelperFunctions';
+import { toast } from 'react-toastify';
+
+
+
 const INITIAL_STATE = {
-  first_name: "",
-  last_name: "",
-  address: "",
-  city: "",
-  u_state: "",
-  zipcode: "",
-  email: "",
-  mobile: "",
-  image_url: "",
-  error: "",
+   name:'',
+  username:"",
+  email:"",
+  mobile:"",
+  error: '',
+  club_type:"",
   popup_msg: "",
   loading: false,
   submit_success: false,
-  nav_from: 1,
   is_create: false,
   item_deleted: false,
-  validate_ph_no: "",
-  validate_email_no: "",
-  club_type: "",
-  is_added: false,
-  is_updated: false,
-};
+  club_list:[]
+}
+
 
 export default (state = INITIAL_STATE, action) => {
-  switch (action.type) {
-    case OffendersDetailsActionTypes.OFFENDERS_DETAILS_REQUEST_START:
-      return { ...state, loading: true };
+    switch (action.type) {
+        case clubsActionTypes.CLUBS_DETAILS_REQUEST_START:
+            return { ...state, loading: true }
+        case clubsActionTypes.CLUBS_DETAILS_REQUEST_SUCCESS:
+            console.log("hiiiiiiiiiii")
+            var club = action.payload.data;
+            return {
+                ...state, loading: false,
+              
+                 clubname:"name",
+                 email:"email",
+                 mobile:"mobile",
+                 clubtype:"club_type",
+                 is_create: false,
+                 submit_success:false,
 
-    case OffendersDetailsActionTypes.OFFENDERS_DETAILS_REQUEST_SUCCESS:
-      var offender = action.payload.data;
-      var offender_location = action.payload.location;
-      let homezone = convertTolocationtoMap(offender.home_zone);
-      let workzone = convertTolocationtoMap(offender.work_zone);
-      let restrictzone = INITIAL_STATE.restrict_zone;
-      let curfew_from = convertStToDateObj(offender.curfew_from);
-      let curfew_to = convertStToDateObj(offender.curfew_to);
-      let datevalidation = validateFromDateWithCurrentDate(curfew_to);
-      let filter_times = filterTimes(curfew_from);
-      //  window.$('#add_edit_offender').modal('show');
-      return {
+
+            }
+        case clubsActionTypes.CLUB_DETAILS_PAGE_RESET:
+            var club = action.payload;
+            return {
+                ...state, ...INITIAL_STATE
+            }
+        case clubsActionTypes.CLUBS_DETAILS_REQUEST_FAIL:
+            toast.error(action.payload, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: false,
+                progress: undefined,
+            });
+            return { ...state, loading: false, historyLocationloading: false }
+
+    
+        case clubsActionTypes.ADD_CLUBS_DETAILS_REQUEST_SUCCESS:
+
+
+            // window.$('#add_edit_club').modal('hide');
+            return {
+                ...state, ...INITIAL_STATE, is_added: true,
+                submit_success: true,
+            }
+
+
+        case clubsActionTypes.DELETE_REQUEST_SUCCESS:
+            window.$('#delete_item').modal('hide');
+            toast.success(action.payload.message, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: false,
+                progress: undefined,
+            });
+            return {
+                ...state,
+                item_deleted: true,
+                loading: false,
+                club_list: [...state.club_list.filter((club)=>club.id !==action.payload.data.id)]
+            }
+
+        case clubsActionTypes.UPDATE_CLUBS_DETAILS_REQUEST_SUCCESS:
+            toast.success(action.payload.message, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: false,
+                progress: undefined,
+            });
+
+            // window.$('#add_edit_club').modal('hide');
+            return {
+                
+                ...state, ...INITIAL_STATE,
+                submit_success: true,
+                is_updated: true
+            }
+/* 
+        case clubsActionTypes.SET_CLUB_DETAILS:
+            const val = action.payload.value;
+            return {
+                ...state,
+                [action.payload.name]: val
+            } */
+case clubsActionTypes.EDIT_USER:  
+    return{
         ...state,
-        loading: false,
-        first_name: offender.fname,
-        last_name: offender.lname,
-        address: offender.address,
-        city: offender.city,
-        u_state: offender.state,
-        zipcode: offender.zip,
-        email: offender.email,
-        mobile: filter_country_code(offender.mobile),
+        club_list: state.club_list.map(club=>club.id === action.payload.data.id ? action.payload.data : club)
+    }
 
-        is_create: false,
 
-        validate_email_no: offender.email,
-        validate_ph_no: offender.mobile,
-      };
-    case ClubsActionTypes.CLUB_DETAILS_PAGE_RESET:
-      var club = action.payload;
-      return {
-        ...state,
-        ...INITIAL_STATE,
-      };
-    case ClubsActionTypes.CLUBS_DETAILS_REQUEST_FAIL:
-      toast.error(action.payload, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: false,
-        progress: undefined,
-      });
-      return { ...state, loading: false };
+            case clubsActionTypes.GET_CLUBS_DETAILS_REQUEST_START:
+                return { ...state, loading: true }
+            case clubsActionTypes.GET_CLUBS_DETAILS_REQUEST_SUCCESS:
+                console.log("hiiiiiiiiiii", action.payload)
+            
+                var club = action.payload;
+               
+                return {
 
-    case ClubsActionTypes.ADD_CLUBS_DETAILS_REQUEST_SUCCESS:
-      // window.$('#add_edit_club').modal('hide');
-      return {
-        ...state,
-        ...INITIAL_STATE,
-        is_added: true,
-        submit_success: true,
-      };
+                    ...state, loading: false,
+                     submit_success:true,
+                     club_list:club    
+                }
+            case clubsActionTypes.GET_CLUB_DETAILS_PAGE_RESET:
+                
+                var club = action.payload;
+                return {
+                    ...state, ...INITIAL_STATE
+                }
+            case clubsActionTypes.GET_CLUBS_DETAILS_REQUEST_FAIL:
+                toast.error(action.payload, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: false,
+                    progress: undefined,
+                });
+                return { ...state, loading: false, historyLocationloading: false }
+    
+        
+            case clubsActionTypes.GET_CLUBS_DETAILS_REQUEST_SUCCESS:
+    
+    
+                // window.$('#add_edit_club').modal('hide');
+                return {
+                    ...state, ...INITIAL_STATE, is_added: true,
+                    submit_success: true,
+                }
+    
+            case clubsActionTypes.GET_UPDATE_CLUBS_DETAILS_REQUEST_SUCCESS:
+                toast.success(action.payload.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: false,
+                    progress: undefined,
+                });
+    
+                // window.$('#add_edit_club').modal('hide');
+                return {
+                    ...state, ...INITIAL_STATE,
+                    submit_success: true,
+                    is_updated: true
+                }
+    
+            case clubsActionTypes.SET_CLUB_DETAILS:
+                const val = action.payload.value;
+                return {
+                    ...state,
+                    [action.payload.name]: val
+                }
+    
+            
+//adding
+            
+////
+        
+        case clubsActionTypes.CLUBS_DETAILS_POPUP_BOX_ERROR_MESSAGE:
+            return {
+                ...state,
+                popup_msg: action.payload
+            }
 
-    case ClubsActionTypes.DELETE_CLUBS_REQUEST_SUCCESS:
-      window.$("#delete_item").modal("hide");
-      toast.success(action.payload.message, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
-      return {
-        ...state,
-        item_deleted: true,
-        loading: false,
-      };
+        case clubsActionTypes.UPDATE_PIC_INFO:
 
-    case ClubsActionTypes.UPDATE_CLUBS_DETAILS_REQUEST_SUCCESS:
-      toast.success(action.payload.message, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
+            return { ...state, image_url: action.payload.image_url, loading: false }
 
-      // window.$('#add_edit_offender').modal('hide');
-      return {
-        ...state,
-        ...INITIAL_STATE,
-        submit_success: true,
-        is_updated: true,
-      };
-
-    case ClubsActionTypes.SET_CLUB_DETAILS:
-      const val = action.payload.value;
-      return {
-        ...state,
-        [action.payload.name]: val,
-      };
-
-    case ClubsActionTypes.CLUBS_POPUP_BOX_ERROR_MESSAGE:
-      return {
-        ...state,
-        popup_msg: action.payload,
-      };
-
-    case OffendersDetailsActionTypes.UPDATE_PIC_INFO:
-      return { ...state, image_url: action.payload.image_url, loading: false };
-
-    default:
-      return state;
-  }
-};
+        default: return state;
+    }
+}
