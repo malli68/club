@@ -16,20 +16,22 @@ console.log(">>>",user);
 
      console.log(">>",ServiceUrls.ADD_CLUB_BY_ID, user);
         dispatch(requeststarted());
-        console.log("user>>>>>>>>>>>>>>>>>>",user)
+        console.log("user>>>>>>>>>>>>>>>>>>",userinfo)
         //to fetch data from userinfo
         user.superAdminId=userinfo._id
         user.username=userinfo.username
         user.password="123456"
         user.clublocation="hyderabad"
         console.log(user)
-        const headers = {
+       /*  const headers = {
             "Content-Type": "application/json",
             Authorization: "Bearer " + userinfo.token,
-        }
-        axios.post(ServiceUrls.ADD_CLUB_BY_ID, user,{
+        } */
+    axios.post(ServiceUrls.ADD_CLUB_BY_ID, user,{ headers: { "Authorization": "Bearer "+userinfo['token'] }})
+
+       /*  axios.post(ServiceUrls.ADD_CLUB_BY_ID, user,{
             headers: headers
-        }).then(res=>{
+        }) */.then(res=>{
 
                 let resCode = res.data;
                 console.log(resCode)
@@ -58,12 +60,13 @@ export const getuser =(user)=>{
     dispatch(getrequeststarted());
     axios.post(ServiceUrls.GET_CLUB_BY_ID, user,{ headers: { "Authorization": "Bearer "+userinfo['token'] }})
     .then(res=>{
-      let resCode = res.data;
+      let resCode = res.status;
       console.log(resCode);
       console.log(res)
       if(resCode == 200){
         console.log("sucess 2000", resCode)
-      dispatch(getrequestSuccess(res.data.response));
+        // console.log(">>",res.data.data.data)
+      dispatch(getrequestSuccess(res.data.data.data));
        } else {
         dispatch(getrequestFailure(res.data.response.message));
     }
@@ -72,6 +75,23 @@ export const getuser =(user)=>{
       dispatch(getrequestFailure(err.message))
     }) 
   };
+}
+
+export const deleteuser =(user)=>{
+    return dispatch =>{
+        dispatch(deleterequeststarted())
+        axios.post(ServiceUrls)
+        .then (res=>{
+            let resCode=res.status;
+            if(resCode === 200){
+                dispatch(deleterequestsuccess(res.data));
+            }else{
+                dispatch(deleterequestfailure(res.data.response.message))
+            }
+        }).catch(err => {
+            dispatch(deleterequestfailure(err.message))
+          }) 
+    }
 }
 export const setdata = (i) => {
     return dispatch => {
@@ -107,10 +127,24 @@ const getrequestFailure =(data)=>({
     type: clubsActionTypes.GET_CLUBS_DETAILS_REQUEST_FAIL,
     payload: data
 })
+const deleterequeststarted =(data)=>({
+    type: clubsActionTypes.DELETE_REQUEST_START,
+    payload: data
+})
+const deleterequestsuccess =(data)=>({
+    type: clubsActionTypes.DELETE_REQUEST_SUCCESS,
+    payload: data
+})
+const deleterequestfailure =(data)=>({
+    type: clubsActionTypes.DELETE_REQUEST_FAILURE,
+    payload: data
+})
 const setdataToredux = (data) => ({
     type: clubsActionTypes.SET_CLUB_DETAILS,
     payload: data
 })
+
+
 
 
 
