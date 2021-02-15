@@ -10,35 +10,28 @@ export const adduser = (user) => {
         
      const userinfo = getCacheObject(SESSION_KEY_NAME )
 console.log(">>>",SESSION_KEY_NAME);
-console.log(">>>",userinfo);
-console.log(">>>",userinfo['token']);
+
 console.log(">>>",user);
 
-     console.log(">>",ServiceUrls.ADD_CLUB_BY_ID, user);
+     console.log(">>",ServiceUrls.ADD_CLUB_BY_ID, userinfo);
         dispatch(requeststarted());
-        console.log("user>>>>>>>>>>>>>>>>>>",userinfo)
-        //to fetch data from userinfo
-        user.superAdminId=userinfo._id
-        user.username=userinfo.username
-        user.password="123456"
-        user.clublocation="hyderabad"
+
+         user.superAdminId=userinfo._id
+    
         console.log(user)
-       /*  const headers = {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + userinfo.token,
-        } */
+     
     axios.post(ServiceUrls.ADD_CLUB_BY_ID, user,{ headers: { "Authorization": "Bearer "+userinfo['token'] }})
+    .then(res=>{
+// console.log(res.data.code)
+// console.log(res.data.data)
 
-       /*  axios.post(ServiceUrls.ADD_CLUB_BY_ID, user,{
-            headers: headers
-        }) */.then(res=>{
-
-                let resCode = res.data;
-                console.log(resCode)
-                console.log("sucess 200", resCode)
+                let resCode = res.data.code;
+                // console.log(resCode)
+                // console.log("sucess 200", resCode)
                 if (resCode == 200) {
                     console.log("sucess 2000", resCode)
                     dispatch(requestSuccess(res.data.data));
+                    // this.props.getuser();
                 } else {
                     dispatch(requestFailure(res.data.response.message));
                 }
@@ -65,7 +58,7 @@ export const getuser =(user)=>{
       console.log(res)
       if(resCode == 200){
         console.log("sucess 2000", resCode)
-        // console.log(">>",res.data.data.data)
+      
       dispatch(getrequestSuccess(res.data.data.data));
        } else {
         dispatch(getrequestFailure(res.data.response.message));
@@ -79,12 +72,17 @@ export const getuser =(user)=>{
 
 export const deleteuser =(user)=>{
     return dispatch =>{
+    const userinfo=getCacheObject (SESSION_KEY_NAME)
+
         dispatch(deleterequeststarted())
-        axios.post(ServiceUrls)
+        axios.post(ServiceUrls.DELETE_CLUB_BY_ID,user,{ headers: { "Authorization": "Bearer "+userinfo['token'] }})
         .then (res=>{
-            let resCode=res.status;
+            console.log(res.status)
+            console.log(res.data.code)
+
+            let resCode=res.data.code;
             if(resCode === 200){
-                dispatch(deleterequestsuccess(res.data));
+                dispatch(deleterequestsuccess(res.data.data));
             }else{
                 dispatch(deleterequestfailure(res.data.response.message))
             }
@@ -93,6 +91,71 @@ export const deleteuser =(user)=>{
           }) 
     }
 }
+
+
+
+
+export const getclubinfo = (i) => {
+    return dispatch => {
+        const userinfo=getCacheObject (SESSION_KEY_NAME)
+
+        dispatch(getclubinforequest_start());
+        axios.post(ServiceUrls.GET_CLUB, i,{ headers: { "Authorization": "Bearer "+userinfo['token'] }})
+            .then(res => {
+                console.log("get>>", res.data.data);
+            //  this.userinfo.name = res.data.data.clubname;
+                let resCode = res.data.code;
+                if (resCode === 200) {
+                    dispatch(getclubinforequest_success(res.data.data));
+                } else {
+                    dispatch(getclubinforequest_fail(res.data.message));
+                }
+
+            })
+            .catch(err => {
+                dispatch(getclubinforequest_fail(err.message));
+            });
+    };
+    
+
+}
+
+export const updateclub = (i) => {
+    console.log(i)
+    return dispatch => {
+        const userinfo=getCacheObject (SESSION_KEY_NAME)
+
+        dispatch(updaterequest_start());
+        // var send = {
+        //     "_id": i._id,
+        //     "email": i.email,
+        //     "mobileno": i.mobileno,
+        //     "clubname": i.clubname,
+        //     "clubtype": i.clubtype,
+        //     "clublocation": "Hyderabad"
+        // }
+
+        axios.post(ServiceUrls.UPDATE_CLUB_BY_ID, i,{ headers: { "Authorization": "Bearer "+userinfo['token'] }})
+            .then(res => {
+                console.log("get>>", res);
+            //  this.userinfo.name = res.data.data.clubname;
+                let resCode = res.data.code;
+                if (resCode === 200) {
+                    dispatch(updaterequest_success(res.data.data.data));
+                } else {
+                    dispatch(updaterequest_fail(res.data.message));
+                }
+
+            })
+            .catch(err => {
+                dispatch(updaterequest_fail(err.message));
+            });
+    };
+    
+
+}
+
+
 export const setdata = (i) => {
     return dispatch => {
         dispatch(setdataToredux(i));
@@ -139,10 +202,47 @@ const deleterequestfailure =(data)=>({
     type: clubsActionTypes.DELETE_REQUEST_FAILURE,
     payload: data
 })
+const updaterequeststarted =(data)=>({
+    type: clubsActionTypes.UPDATE_REQUEST_START,
+    payload: data
+})
+const updaterequestsuccess =(data)=>({
+    type: clubsActionTypes.UPDATE_REQUEST_SUCCESS,
+    payload: data
+})
+const updaterequestfailure =(data)=>({
+    type: clubsActionTypes.UPDATE_REQUEST_FAILURE,
+    payload: data
+})
 const setdataToredux = (data) => ({
     type: clubsActionTypes.SET_CLUB_DETAILS,
     payload: data
 })
 
 
+const getclubinforequest_start = () => ({
+    type: clubsActionTypes.GET_CLUBS_REQUEST_START
+});
+const getclubinforequest_success = (data) => ({
+    type: clubsActionTypes.GET_CLUBS_DELTAILS,
+    payload: data
+});
+const getclubinforequest_fail =(data)=>({
+    type: clubsActionTypes.GET_CLUBS_REQUEST_FAILURE,
+    payload: data
+})
 
+
+const updaterequest_start=()=>({
+    type:clubsActionTypes.UPDATE_CLUBS_REQUEST_START,
+});
+const updaterequest_success=(data)=>({
+    type:clubsActionTypes.UPDATE_CLUBS_REQUEST_SUCCESS,
+    payload: data
+
+});
+const updaterequest_fail=(data)=>({
+    type:clubsActionTypes.UPDATE_CLUBS_REQUEST_FAILURE,
+    payload: data
+
+});
