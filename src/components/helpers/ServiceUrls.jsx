@@ -4,8 +4,10 @@ const ServiceUrls = {
   LOGIN: BASE_URL + "/admin/superAdminLogin",
   ADD_CLUB_BY_ID: BASE_URL + "/admin/clubRegistration",
   GET_CLUB_BY_ID: BASE_URL + "/admin/getClubList",
-  EDIT_CLUB_BY_ID: BASE_URL + "",
-  UPLOAD_PIC: BASE_URL + "",
-  DELETE_CLUB_BY_ID: BASE_URL + "",
+  EDIT_CLUB_BY_ID: BASE_URL + "/admin/updateClub",
+  GET_CLUB: BASE_URL + "/admin/getClubById",
+  UPDATE_CLUB_BY_ID : BASE_URL + "/admin/updateClub",
+  DELETE_CLUB_BY_ID: BASE_URL + "/admin/deleteClub",
+ 
 };
 export default ServiceUrls;
