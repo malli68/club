@@ -8,6 +8,6 @@ const ServiceUrls = {
   GET_CLUB: BASE_URL + "/admin/getClubById",
   UPDATE_CLUB_BY_ID : BASE_URL + "/admin/updateClub",
   DELETE_CLUB_BY_ID: BASE_URL + "/admin/deleteClub",
- 
+  CHECK_USERNAME:BASE_URL + "/admin/checkClubUsername"
 };
 export default ServiceUrls;
