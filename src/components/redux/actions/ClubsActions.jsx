@@ -126,12 +126,12 @@ export const updateclub = (i) => {
         const userinfo=getCacheObject (SESSION_KEY_NAME)
 
         dispatch(updaterequest_start());
-        // var send = {
-        //     "_id": i._id,
-        //     "email": i.email,
-        //     "mobileno": i.mobileno,
-        //     "clubname": i.clubname,
-        //     "clubtype": i.clubtype,
+        // {
+        //     "_id": "5f34d42d2ee6da29f002629a",
+        //     "email": "abc12@yopmail.com",
+        //     "mobileno": 9573426859,
+        //     "clubname": "abc",
+        //     "clubtype": 1,
         //     "clublocation": "Hyderabad"
         // }
 
@@ -168,6 +168,11 @@ export const error = (msg) => {
     };
 }
 
+export const validateform = (i) => {
+    return dispatch => {
+        dispatch(validate(i));
+    };
+  }
 const requeststarted = () => ({
     type: clubsActionTypes.CLUBS_DETAILS_REQUEST_START
 });
@@ -246,3 +251,8 @@ const updaterequest_fail=(data)=>({
     payload: data
 
 });
+
+const validate = (data) => ({
+    type: clubsActionTypes.VALIDATE_DETAILS,
+    payload: data
+  });
