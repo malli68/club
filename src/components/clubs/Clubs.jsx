@@ -8,9 +8,12 @@ import {
   getuser,
   deleteuser,getclubinfo,updateclub,
 } from "../redux/actions/ClubsActions";
+import {checkUserNameExist,resetvalidatedata} from "../redux/actions/ValidateActions"
+import {validate_Form}  from '../../utils/Validation'
 export class Clubs extends Component {
   constructor(props) {
     super(props);
+    this.props.resetvalidatedata();
     this.state = {
       club_list: [],
       getclubinfo:[]
@@ -20,7 +23,8 @@ export class Clubs extends Component {
   }
 
   render() {
-   console.log(getclubinfo) 
+    console.log(this.props,"::::::")
+   console.log(getclubinfo,"123") 
    var getclubinfo=this.props.getclubinfo()
     var {
       name,
@@ -34,8 +38,15 @@ export class Clubs extends Component {
       clublocation,
       clubname,
       superAdminId,club_details,
+      editname,
+      editusername,
+      editemail,
+      editmobile,
+      editclub_type,username_validate_msg,
     } = this.props;
-    console.log("club_details", club_details)
+
+    
+    console.log("club_details",  this.props.club_details)
     return (
       <div>
         <div class="container-fluid">
@@ -176,6 +187,8 @@ export class Clubs extends Component {
                                   onChange={this.handleChange}
                                   required
                                 />
+                         <p className="text-primary">{username_validate_msg}</p>
+
                               </div>
                               <div class="form-group col-lg-2">
                                 <label for="subject">Club-Types</label>
@@ -290,7 +303,7 @@ export class Clubs extends Component {
                 {/* <!-- end row --> */}
               </div>
               <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog" id="updateModal">
     <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -313,12 +326,12 @@ export class Clubs extends Component {
                                  <label for="name">Name</label>
                                  <input
                                    type="text"
-                                   value={club_details.clubname}
+                                   value={editname}
                                    ref="name"
                                    id="name"
-                                   name="name"
+                                   name="editname"
                                    class="form-control"
-                                   onChange={this.handleChange}
+                                   onChange={this.updatehandleChange}
                                    required
                                  />
                                </div>
@@ -327,12 +340,12 @@ export class Clubs extends Component {
                                  <label for="email">Email</label>
                                  <input
                                    type="email"
-                                   value={club_details.email}
+                                   value={editemail}
                                    id="email"
                                    ref="email"
-                                   name="email"
+                                   name="editemail"
                                    class="form-control"
-                                   onChange={this.handleChange}
+                                   onChange={this.updatehandleChange}
                                    required
                                  />
                                </div>
@@ -341,12 +354,12 @@ export class Clubs extends Component {
                                  <label for="subject">Mobile</label>
                                  <input
                                    type="text"
-                                   value={club_details.mobileno}
+                                   value={editmobile}
                                    id="mobile"
                                    ref="mobile"
-                                   name="mobile"
+                                   name="editmobile"
                                    class="form-control"
-                                   onChange={this.handleChange}
+                                   onChange={this.updatehandleChange}
                                    required
                                  />
                                </div>
@@ -354,12 +367,12 @@ export class Clubs extends Component {
                                  <label for="subject">Username</label>
                                  <input
                                    type="text"
-                                   value={club_details.username}
+                                   value={editusername}
                                    id="username"
                                    ref="username"
                                    class="form-control"
-                                   name="username"
-                                   onChange={this.handleChange}
+                                   name="editusername"
+                                   onChange={this.updatehandleChange}
                                    required
                                  />
                                </div>
@@ -367,10 +380,10 @@ export class Clubs extends Component {
                                  <label for="subject">Club-Types</label>
                                  <select
                                    className="form-control"
-                                   name="club_type"
+                                   name="editclub_type"
                                    ref="club_type"
-                                   value={club_details.clubtype}
-                                   onChange={this.handleChange}
+                                   value={editclub_type}
+                                   onChange={this.updatehandleChange}
                                    required
                                  >
                                    <option>Clubtypes</option>
@@ -389,7 +402,7 @@ export class Clubs extends Component {
                                    value="Update"
                                    ref="Create"
                                    onClick={() => {
-                                    this.updateClub(club_details);
+                                    this.updateClub(this.props.club_details._id);
                                    }}
                                  ></input>
                                </div>
@@ -421,13 +434,38 @@ export class Clubs extends Component {
     );
     // <div class="rightbar-overlay"></div>
   }
-  updateClub=(_id)=>{
-    console.log(_id)
-    this.props.updateclub(_id);
-    this.props.getuser(_id)
+  updateClub=(club)=>{
+    console.log(club,"lll")
+    const {
+      id,
+      editname,
+      username,
+      editmobile,
+      editemail,
+      editclub_type,
+      clublocation,
+      password,
+      superAdminId,
+    } = this.props;
+    console.log(data);
+    var data = {
+      _id:id,
+      clubname: editname,
+      clubtype: editclub_type,
+      clublocation: "hyd",
+      mobileno: editmobile,
+      email: editemail,
+      // username: username,
+      // password: "123456",
+      // superAdminId: "123",
+    };
+    this.props.updateclub(data);
+    this.props.getuser(data)
+  
 
   }
   handleChange = (e) => {
+    console.log(e.target.value,"e.target.value")
     var data = { name: e.target.name, value: e.target.value };
     if (e.target.name == "name") {
       this.props.setdata(data);
@@ -439,10 +477,30 @@ export class Clubs extends Component {
       this.props.setdata(data);
     } else if (e.target.name == "username") {
       this.props.setdata(data);
+      console.log('darta:477',data);
+      this.props.checkUserNameExist(data.value);
+    }
+  };
+  updatehandleChange = (e) => {
+    console.log(e.target.value,"e.target.value")
+    var data = { name: e.target.name, value: e.target.value };
+    if (e.target.name == "editname") {
+      this.props.setdata(data);
+    } else if (e.target.name == "editemail") {
+      this.props.setdata(data);
+    } else if (e.target.name == "editmobile") {
+      this.props.setdata(data);
+    } else if (e.target.name == "editclub_type") {
+      this.props.setdata(data);
+    } else if (e.target.name == "editusername") {
+      this.props.setdata(data);
     }
   };
   componentDidMount() {
+    this.props.updateclub()
      this.props.getuser();
+     
+
     
   }
 
@@ -461,7 +519,6 @@ export class Clubs extends Component {
   }
   onEdit(_id) {
     console.log(_id)
-    console.log(getclubinfo._id)
     // this.props.deleteuser({id:_id});
     this.props.getclubinfo({id:_id})
   }
@@ -477,6 +534,11 @@ export class Clubs extends Component {
       superAdminId,
     } = this.props;
     console.log(data);
+    /* var errormsg = validate_Form(this.props);
+        if (errormsg) {
+            this.props.validateform(errormsg);
+            return false;
+        } */
     var data = {
       clubname: name,
       clubtype: club_type,
@@ -497,6 +559,7 @@ export class Clubs extends Component {
 }
 const mapStateToProps = (state) => {
   const {
+    id,
     name,
     username,
     email,
@@ -511,12 +574,14 @@ const mapStateToProps = (state) => {
     submit_success,
     is_create,
     item_deleted,
-    club_list,club_details
+    club_list,club_details,
+    editusername,editname,editmobile,editclub_type,editemail
   } = state.clubs;
-
+  const {  username_validate_msg } = state.validate;
   console.log("club_details", loading)
-
+  console.log(username_validate_msg)
   return {
+    id,
     name,
     username,
     email,
@@ -531,7 +596,8 @@ const mapStateToProps = (state) => {
     submit_success,
     is_create,
     item_deleted,
-    club_list,club_details
+    editusername,editname,editmobile,editclub_type,editemail,
+    club_list,club_details,username_validate_msg,checkUserNameExist
   };
 };
 
@@ -554,7 +620,12 @@ const mapDispatchToProps = (dispatch) => {
     } ,
     updateclub: (input) =>{
       dispatch(updateclub(input));
-    } 
+    } ,
+    checkUserNameExist: (input) =>{
+      dispatch(checkUserNameExist(input));
+    },resetvalidatedata: () => {
+      dispatch(resetvalidatedata());
+  }, 
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Clubs);
@@ -577,4 +648,10 @@ export default connect(mapStateToProps, mapDispatchToProps)(Clubs);
                                                     <i class="fa fa-trash" onClick={()=>this.onDelete(club.id)}></i>
                                                 </td>
                                                 </tr>
-                                            })} */
+                                            })}
+                                            
+                                              $('document').ready(function() {
+$('#updateModal').modal('hide');
+    })
+                                            
+                                            */
