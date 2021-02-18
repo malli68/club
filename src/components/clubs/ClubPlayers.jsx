@@ -6,49 +6,38 @@ import {
   setdata,
   adduser,
   getuser,
-  deleteuser,getclubinfo,updateclub,
-} from "../redux/actions/ClubsActions";
+  deleteuser,getuserinfo,updateuser,
+} from "../redux/actions/ClubPlayersActions";
 import {checkUserNameExist,resetvalidatedata} from "../redux/actions/ValidateActions"
-import { validate_ClubsForm } from '../../utils/Validation'
 import {validate_Form}  from '../../utils/Validation'
 import Sidebar from "../commons/Sidebar";
-export class Clubs extends Component {
+export class ClubPlayers extends Component {
   constructor(props) {
     super(props);
     this.props.resetvalidatedata();
     this.state = {
-      club_list: [],
-      getclubinfo:[]
+      user_list: [],
       
       
     };
   }
 
   render() {
-    console.log(this.props,"::::::")
-   console.log(getclubinfo,"123") 
-   var getclubinfo=this.props.getclubinfo()
+
     var {
-      name,
+      id,
+      firstname,
+      lastname,
       username,
       email,
-      mobile,
-      submit_success,
-      is_create,
-      club_type,
-      club_list,
-      clublocation,
-      clubname,
-      superAdminId,club_details,
-      editname,
-      editusername,
-      editemail,
-      editmobile,
-      editclub_type,username_validate_msg,
+      mobileno,
+  clubId, 
+  error,
+  user_list,editusername,editemail,editfirstname,editlastname,editmobileno,username_validate_msg
     } = this.props;
 
     
-    console.log("club_details",  this.props.club_details)
+    // console.log("club_details",  this.props.club_details)
     return (
       <div>
         <div class="container-fluid">
@@ -80,7 +69,7 @@ export class Clubs extends Component {
                 </div>
 
                 {/* <!--- Sidemenu --> */}
-                  <Sidebar/>
+                <Sidebar/>
                 {/* <!-- Sidebar --> */}
               </div>
             </div>
@@ -95,7 +84,7 @@ export class Clubs extends Component {
                 <div class="row">
                   <div class="col-12">
                     <div class="page-title-box d-flex align-items-center justify-content-between">
-                      <h4 class="page-title mb-0 font-size-18">Clubs</h4>
+                      <h4 class="page-title mb-0 font-size-18">Club Players</h4>
 
                       <div class="page-title-right">
                         <ol class="breadcrumb m-0">
@@ -112,25 +101,37 @@ export class Clubs extends Component {
                 <div class="row">
                   <div class="col-12">
                     <div class="card box-big-shadow">
-                      <h4 class="card-header mt-0">Add New Club</h4>
+                      <h4 class="card-header mt-0">Add New Player</h4>
                       <div class="card-body">
                         <form class="repeater" enctype="multipart/form-data">
                           <div data-repeater-list="group-a">
                             <div data-repeater-item class="row">
                               <div class="form-group col-lg-2">
-                                <label for="name">Name</label>
+                                <label for="firstname">First Name</label>
                                 <input
                                   type="text"
-                                  value={name}
-                                  ref="name"
-                                  id="name"
-                                  name="name"
+                                  value={firstname}
+                                  ref="firstname"
+                                  id="firstname"
+                                  name="firstname"
                                   class="form-control"
                                   onChange={this.handleChange}
-                                  
+                                  required
                                 />
                               </div>
-
+                              <div class="form-group col-lg-2">
+                                <label for="lastname">Last Name</label>
+                                <input
+                                  type="text"
+                                  value={lastname}
+                                  ref="lastname"
+                                  id="lastname"
+                                  name="lastname"
+                                  class="form-control"
+                                  onChange={this.handleChange}
+                                  required
+                                />
+                              </div>
                               <div class="form-group col-lg-2">
                                 <label for="email">Email</label>
                                 <input
@@ -141,21 +142,7 @@ export class Clubs extends Component {
                                   name="email"
                                   class="form-control"
                                   onChange={this.handleChange}
-                                  
-                                />
-                              </div>
-
-                              <div class="form-group col-lg-2">
-                                <label for="subject">Mobile</label>
-                                <input
-                                  type="text"
-                                  value={mobile}
-                                  id="mobile"
-                                  ref="mobile"
-                                  name="mobile"
-                                  class="form-control"
-                                  onChange={this.handleChange}
-                                  
+                                  required
                                 />
                               </div>
                               <div class="form-group col-lg-2">
@@ -168,30 +155,25 @@ export class Clubs extends Component {
                                   class="form-control"
                                   name="username"
                                   onChange={this.handleChange}
-                                  
+                                  required
                                 />
-                         <p className="text-primary">{username_validate_msg}</p>
+                        <p className="text-primary">{username_validate_msg}</p> 
 
                               </div>
                               <div class="form-group col-lg-2">
-                                <label for="subject">Club-Types</label>
-                                <select
-                                  className="form-control"
-                                  name="club_type"
-                                  ref="club_type"
-                                   value={club_type}  onChange={
-                                    this.handleChange
-                                  }
-                                  
-                                >
-                                  <option>Clubtypes</option>
-                                  <option value="0">Bronze</option>
-                                  <option value="1">Silver</option>
-                                  <option value="2">Gold</option>
-                                  <option value="3">Diamond</option>
-                                  <option value="4">Platinum</option>
-                                </select>
+                                <label for="subject">Mobile</label>
+                                <input
+                                  type="text"
+                                  value={mobileno}
+                                  id="mobileno"
+                                  ref="mobileno"
+                                  name="mobileno"
+                                  class="form-control"
+                                  onChange={this.handleChange}
+                                  required
+                                />
                               </div>
+                              
                               <div class="col-lg-2 align-self-center">
                                 <input
                                   data-repeater-create
@@ -200,7 +182,7 @@ export class Clubs extends Component {
                                   value="Create"
                                   ref="Create"
                                   onClick={() => {
-                                    this.createClub();
+                                    this.createUser();
                                   }}
                                 ></input>
                               </div>
@@ -217,7 +199,7 @@ export class Clubs extends Component {
                   <div class="col-12">
                     <div class="card">
                       <div class="card-body">
-                        <h4 class="card-title mb-4">Clubs List</h4>
+                        <h4 class="card-title mb-4">Players List</h4>
 
                         <table
                           id="datatable"
@@ -242,30 +224,30 @@ export class Clubs extends Component {
                             </tr>
                           </thead>
 
-                          <tbody>
-                            {club_list.length > 0 ? (
-                              club_list.map((club, index) => {
-                                // console.log(club._id);
+                       {   <tbody>
+                            {user_list.length > 0 ? (
+                              user_list.map((user, index) => {
+                                console.log(user._id);
                                 // console.log(club.mobileno)
                                 return (
                                   <tr key={index}>
                                     <td>{index + 1}</td>
-                                    {/* <td>{ club._id }</td> */}
-                                    <td>{club.clubname}</td>
+                                    {/* <td>{ user._id }</td> */}
+                                    <td>{user.firstname}{user.lastname}</td>
                                     <td>08/02/2020</td>
-                                    <td>{club.mobileno}</td>
-                                    <td>{club.email}</td>
-                                    <td>{club.username}</td>
+                                    <td>{user.mobileno}</td>
+                                    <td>{user.email}</td>
+                                    <td>{user.username}</td>
                                     <td>240</td>
                                     <td>200</td>
                                     <td>
                                      <i
                                         class="fa fa-edit" data-toggle="modal" data-target="#myModal"
-                                        onClick={() => this.onEdit(club._id)}
+                                        onClick={() => this.onEdit(user._id)}
                                       ></i>
                                       <i
                                         class="fa fa-trash"
-                                        onClick={() => this.onDelete(club._id)}
+                                        onClick={() => this.onDelete(user._id)}
                                       ></i>
                                     </td>
                                   </tr>
@@ -276,7 +258,7 @@ export class Clubs extends Component {
                                 <td colSpan="5">Loading...</td>
                               </tr>
                             )}
-                          </tbody>
+                          </tbody>}
                         </table>
                       </div>
                     </div>
@@ -285,6 +267,7 @@ export class Clubs extends Component {
                 </div>
                 {/* <!-- end row --> */}
               </div>
+
               <div class="modal fade" id="myModal" role="dialog">
     <div class="modal-dialog" id="updateModal">
     <div class="modal-content">
@@ -305,48 +288,60 @@ export class Clubs extends Component {
                          <form class="repeater" enctype="multipart/form-data">
                            <div data-repeater-list="group-a">
                              <div data-repeater-item class="row">
-                               <div class="form-group col-lg-8">
-                                 <label for="name">Name</label>
+                               <div class="form-group col-lg-6">
+                                 <label for="firstname">firstname</label>
                                  <input
                                    type="text"
-                                   value={editname}
-                                   ref="name"
-                                   id="name"
-                                   name="editname"
+                                   value={editfirstname}
+                                   ref="editfirstname"
+                                   id="editfirstname"
+                                   name="editfirstname"
                                    class="form-control"
                                    onChange={this.updatehandleChange}
-                                   
+                                   required
                                  />
                                </div>
- 
-                               <div class="form-group col-lg-4">
+                               <div class="form-group col-lg-6">
+                                 <label for="lastname">lastname</label>
+                                 <input
+                                   type="text"
+                                   value={editlastname}
+                                   ref="editlastname"
+                                   id="editlastname"
+                                   name="editlastname"
+                                   class="form-control"
+                                   onChange={this.updatehandleChange}
+                                   required
+                                 />
+                               </div>
+                               <div class="form-group col-lg-12">
                                  <label for="email">Email</label>
                                  <input
                                    type="email"
                                    value={editemail}
-                                   id="email"
-                                   ref="email"
+                                   id="editemail"
+                                   ref="editemail"
                                    name="editemail"
                                    class="form-control"
                                    onChange={this.updatehandleChange}
-                                   
+                                   required
                                  />
                                </div>
  
-                               <div class="form-group col-lg-4">
+                               <div class="form-group col-lg-6">
                                  <label for="subject">Mobile</label>
                                  <input
                                    type="text"
-                                   value={editmobile}
+                                   value={editmobileno}
                                    id="mobile"
                                    ref="mobile"
-                                   name="editmobile"
+                                   name="editmobileno"
                                    class="form-control"
                                    onChange={this.updatehandleChange}
-                                   
+                                   required
                                  />
                                </div>
-                               <div class="form-group col-lg-4">
+                               <div class="form-group col-lg-6">
                                  <label for="subject">Username</label>
                                  <input
                                    type="text"
@@ -356,28 +351,10 @@ export class Clubs extends Component {
                                    class="form-control"
                                    name="editusername"
                                    onChange={this.updatehandleChange}
-                                   
+                                   required
                                  />
                                </div>
-                               <div class="form-group col-lg-4">
-                                 <label for="subject">Club-Types</label>
-                                 <select
-                                   className="form-control"
-                                   name="editclub_type"
-                                   ref="club_type"
-                                   value={editclub_type}
-                                   onChange={this.updatehandleChange}
-                                   
-                                 >
-                                   <option>Clubtypes</option>
-                                   <option value="0">Bronze</option>
-                                   <option value="1">Silver</option>
-                                   <option value="2">Gold</option>
-                                   <option value="3">Diamond</option>
-                                   <option value="4">Platinum</option>
-                                 </select>
-                               </div>
-                               <div class="col-lg-3 align-self-center">
+                               <div class="col-lg-3 align-self-center" >
                                  <input
                                    data-repeater-create
                                    type="button"
@@ -385,7 +362,7 @@ export class Clubs extends Component {
                                    value="Update"
                                    ref="Create"
                                    onClick={() => {
-                                    this.updateClub(this.props.club_details._id);
+                                    this.updateUser(this.props.user_list._id);
                                    }}
                                  ></input>
                                </div>
@@ -406,6 +383,8 @@ export class Clubs extends Component {
       
     </div>
   </div>
+
+
               {/* <!-- End Page-content --> */}
               <Footer />
             </div>
@@ -417,74 +396,79 @@ export class Clubs extends Component {
     );
     // <div class="rightbar-overlay"></div>
   }
-  updateClub=(club)=>{
-    console.log(club,"lll")
-    const {
-      id,
-      editname,
-      username,
-      editmobile,
-      editemail,
-      editclub_type,
-      clublocation,
-      password,
-      superAdminId,
-    } = this.props;
-    console.log(data);
-    var data = {
-      _id:id,
-      clubname: editname,
-      clubtype: editclub_type,
-      clublocation: "hyd",
-      mobileno: editmobile,
-      email: editemail,
-      // username: username,
-      // password: "123456",
-      // superAdminId: "123",
-    };
-    this.props.updateclub(data);
-    this.props.getuser(data)
-  
+////////////////////////
 
-  }
+updateUser=(club)=>{
+  console.log(club,"lll")
+  const {
+    id,
+    editfirstname,
+    editlastname,
+    // editusername,
+    editmobileno,
+    editemail,
+    editclub_type,
+    clublocation,
+    password,
+    superAdminId,
+  } = this.props;
+  console.log(data);
+  var data = {
+    _id:id,
+    firstname: editfirstname,
+    lastname: editlastname,
+    mobileno: editmobileno,
+    email: editemail,
+    //  username: editusername,
+  
+  };
+  this.props.updateuser(data);
+  this.props.getuser(data)
+
+
+}
+
+//////////////////////////
   handleChange = (e) => {
     console.log(e.target.value,"e.target.value")
     var data = { name: e.target.name, value: e.target.value };
-    if (e.target.name == "name") {
+    if (e.target.name == "firstname") {
+      this.props.setdata(data);
+    }
+    else if (e.target.name == "lastname") {
       this.props.setdata(data);
     } else if (e.target.name == "email") {
       this.props.setdata(data);
-    } else if (e.target.name == "mobile") {
+    } else if (e.target.name == "mobileno") {
       this.props.setdata(data);
-    } else if (e.target.name == "club_type") {
+    } 
+     else if (e.target.name == "username") {
       this.props.setdata(data);
-    } else if (e.target.name == "username") {
-      this.props.setdata(data);
-      console.log('darta:477',data);
-      this.props.checkUserNameExist(data.value);
+      // console.log('darta:477',data);
+     this.props.checkUserNameExist(data.value);
+    
+      // console.log("club_details", loading)
+      // console.log(username_validate_msg)
     }
   };
   updatehandleChange = (e) => {
     console.log(e.target.value,"e.target.value")
     var data = { name: e.target.name, value: e.target.value };
-    if (e.target.name == "editname") {
+    if (e.target.name == "editfirstname") {
       this.props.setdata(data);
-    } else if (e.target.name == "editemail") {
+    } 
+    else if (e.target.name == "editlastname") {
       this.props.setdata(data);
-    } else if (e.target.name == "editmobile") {
+    }else if (e.target.name == "editemail") {
       this.props.setdata(data);
-    } else if (e.target.name == "editclub_type") {
+    } else if (e.target.name == "editmobileno") {
       this.props.setdata(data);
     } else if (e.target.name == "editusername") {
       this.props.setdata(data);
     }
   };
   componentDidMount() {
-    this.props.updateclub()
-     this.props.getuser();
-     
-
-    
+     this.props.getuser() 
   }
 
 // componentWillReceiveProps(nextProps){
@@ -493,28 +477,31 @@ export class Clubs extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     // check whether client has
-    const { submit_success, is_create, club_list } = this.props;
+    const { submit_success, is_create, user_list } = this.props;
   }
+//////////////////////
+
+onEdit(_id) {
+  console.log(_id)
+  // this.props.deleteuser({id:_id});
+  this.props.getuserinfo({id:_id})
+}
+
+/////////////////////
   onDelete(_id) {
     console.log(_id)
     this.props.deleteuser({id:_id});
     this.props.getuser(_id)
   }
-  onEdit(_id) {
-    console.log(_id)
-    // this.props.deleteuser({id:_id});
-    this.props.getclubinfo({id:_id})
-  }
-  createClub() {
+  createUser() {
     const {
-      name,
+      firstname,
+      lastname,
       username,
-      mobile,
+      mobileno,
       email,
-      club_type,
-      clublocation,
       password,
-      superAdminId,
+      clubId
     } = this.props;
     console.log(data);
     /* var errormsg = validate_Form(this.props);
@@ -523,17 +510,18 @@ export class Clubs extends Component {
             return false;
         } */
     var data = {
-      clubname: name,
-      clubtype: club_type,
-      clublocation: "hyd",
-      mobileno: mobile,
+      Id:clubId,
+      firstname: firstname,
+      lastname:lastname,
+      mobileno: mobileno,
       email: email,
       username: username,
       password: "123456",
-      // superAdminId: "123",
     };
-    this.props.adduser(data);
-    this.props.getuser(data);
+     this.props.adduser(data);
+     this.props.getuser(data)
+
+ 
 
 
   }
@@ -541,48 +529,29 @@ export class Clubs extends Component {
 const mapStateToProps = (state) => {
   const {
     id,
-    name,
+    firstname,
+    lastname,
     username,
     email,
-    mobile,
-    club_type,
-    error,
-    clublocation,
-    clubname,
-    superAdminId,
-    popup_msg,
-    loading,
-    submit_success,
-    is_create,
-    item_deleted,
-    club_list,club_details,
-    editusername,editname,editmobile,editclub_type,editemail
-  } = state.clubs;
+    mobileno,
+error,
+user_list,editusername,editemail,editfirstname,editlastname,editmobileno,checkUserNameExist,
+  } = state.users;
   const {  username_validate_msg } = state.validate;
-  console.log("club_details", loading)
-  console.log(username_validate_msg)
+ 
   return {
-    id,
-    name,
+     id,
+    firstname,
+    lastname,
     username,
     email,
-    mobile,
-    club_type,
-    error,
-    clublocation,
-    clubname,
-    superAdminId,
-    popup_msg,
-    loading,
-    submit_success,
-    is_create,
-    item_deleted,
-    editusername,editname,editmobile,editclub_type,editemail,
-    club_list,club_details,username_validate_msg,checkUserNameExist
+    mobileno,
+error,
+user_list,editusername,editemail,editfirstname,editlastname,editmobileno,username_validate_msg
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+ const mapDispatchToProps = (dispatch) => {
   return {
     setdata: (input) => {
       dispatch(setdata(input));
@@ -596,43 +565,19 @@ const mapDispatchToProps = (dispatch) => {
     deleteuser: (input) => {
       dispatch(deleteuser(input));
     },
-     getclubinfo: (input) =>{
-      dispatch(getclubinfo(input));
-    } ,
-    updateclub: (input) =>{
-      dispatch(updateclub(input));
+    updateuser: (input) => {
+      dispatch(updateuser(input));
+    },
+    getuserinfo: (input) =>{
+      dispatch(getuserinfo(input));
     } ,
     checkUserNameExist: (input) =>{
-      dispatch(checkUserNameExist(input));
-    },resetvalidatedata: () => {
-      dispatch(resetvalidatedata());
-  }, 
+      dispatch(checkUserNameExist(input))
+    },
+    resetvalidatedata: (input)=>{
+      dispatch(resetvalidatedata(input))
+    }
   };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(Clubs);
+export default  connect(mapStateToProps, mapDispatchToProps)(ClubPlayers);
 
-/* 
-                                            {this.props.club_list.map((club)=>{
-                                                console.log(club_list);
-                                                // console.log(club);
-                                                console.log(club.mobileno);
-                                                <tr key={club._id}>
-                                                <td>{club.clubname}hii</td>
-                                                <td>08/02/2020</td>
-                                                <td>{club.email}</td>
-                                                <td>{club.username}</td>
-                                                <td>{club.mobileno}</td>
-                                                <td>240</td>
-                                                <td>200</td>
-                                                <td>
-                                                    <i class="fa fa-edit" onClick={()=>this.onEdit(club)}></i>
-                                                    <i class="fa fa-trash" onClick={()=>this.onDelete(club.id)}></i>
-                                                </td>
-                                                </tr>
-                                            })}
-                                            
-                                              $('document').ready(function() {
-$('#updateModal').modal('hide');
-    })
-                                            
-                                            */

@@ -35,7 +35,6 @@ class Login extends React.Component {
   componentDidMount() {
     removeSession();
     let isLoggedIn = localStorage.getItem("auth");
-
     this.setState({ login: isLoggedIn });
     // this.refs["email"].focus();
   }
@@ -52,7 +51,8 @@ class Login extends React.Component {
       username: email,
       password: this.state.password,
     };
-    this.props.onUserLogin(dataObject);
+    this.props.onUserLogin1(dataObject);
+
   }
 
   handleEnterKey = (e) => {
@@ -213,9 +213,12 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onUserLogin: (user) => {
-      dispatch(login(user));
+    onUserLogin1: (user) => {
+      dispatch(loginUser(user));
     },
+    // loginUser: (user) =>{
+    //   dispatch(loginUser(user));
+    // },
     onErrorLogin: (user) => {
       dispatch(errorlogin(user));
     },

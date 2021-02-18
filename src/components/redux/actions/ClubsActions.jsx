@@ -1,226 +1,264 @@
-import ClubsActionTypes from "../actionCreators/ClubsActionTypes";
-import axios from "axios";
-import ServiceUrls from "../../helpers/ServiceUrls";
+import clubsActionTypes from '../actionCreators/ClubsActionTypes'
+import axios from 'axios'
+import ServiceUrls from '../../helpers/ServiceUrls'
+import {getCacheObject} from "../../helpers/globalHelpers/GlobalHelperFunctions";
 import config from "../../../config";
-//import { getCacheObject } from "../../helpers/globalHelpers/GlobalHelperFunctions";
 const SESSION_KEY_NAME = config.SESSION_KEY_NAME;
-//const GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY;
+////////////////////////////////////////////////////////////////////
+export const adduser = (user) => {
+    return dispatch => {
+        
+     const userinfo = getCacheObject(SESSION_KEY_NAME )
+console.log(">>>",SESSION_KEY_NAME);
 
-export const addclub = (i) => {
-  return (dispatch) => {
-    const player = /* getCacheObject */ SESSION_KEY_NAME;
-    dispatch(request_start());
-    axios
-      .post(ServiceUrls.ADD_CLUB_BY_ID, i, {
-        headers: { "access-token": player["access-token"] },
-      })
-      .then((res) => {
-        console.log("get>>", res.data);
-        let resCode = res.data.status;
-        if (resCode === 200) {
-          dispatch(request_add_clubs_success(res.data.response));
-        } else {
-          dispatch(request_fail(res.data.response.message));
-        }
-      })
-      .catch((err) => {
-        dispatch(request_fail(err.message));
-      });
-  };
-};
+console.log(">>>",user);
 
-export const getclub = (i) => {
-  return (dispatch) => {
-    const user = /* getCacheObject */ SESSION_KEY_NAME;
-    dispatch(request_start());
-    axios
-      .post(ServiceUrls.GET_CLUB_BY_ID, i, {
-        headers: { "access-token": user["access-token"] },
-      })
-      .then((res) => {
-        console.log("get>>", res.data, user["access-token"]);
-        let resCode = res.data.status;
-        console.log("error msg", res);
-        if (resCode === 200) {
-          dispatch(request_success(res.data.response, i));
-        } else {
-          dispatch(request_fail(res.data.response.message));
-        }
-      })
-      .catch((err) => {
-        dispatch(request_fail(err.message));
-      });
-  };
-};
+     console.log(">>",ServiceUrls.ADD_CLUB_BY_ID, userinfo);
+        dispatch(requeststarted());
 
-export const editclub = (i) => {
-  return (dispatch) => {
-    const user = /* getCacheObject */ SESSION_KEY_NAME;
-    dispatch(request_start());
-    console.log("get>>", i, ServiceUrls.EDIT_CLUB_BY_ID);
-    axios
-      .post(ServiceUrls.EDIT_CLUB_BY_ID, i, {
-        headers: { "access-token": user["access-token"] },
-      })
-      .then((res) => {
-        console.log("update>>", res.data, i);
-        let resCode = res.data.status;
-        if (resCode === 200) {
-          dispatch(updateClubDetails(res.data.response));
-        } else {
-          dispatch(request_fail(res.data.response.message));
-        }
-      })
-      .catch((err) => {
-        dispatch(request_fail(err.message));
-      });
-  };
-};
+         user.superAdminId=userinfo._id
+    
+        console.log(user)
+     
+    axios.post(ServiceUrls.ADD_CLUB_BY_ID, user,{ headers: { "Authorization": "Bearer "+userinfo['token'] }})
+    .then(res=>{
+// console.log(res.data.code)
+// console.log(res.data.data)
 
-export const uploadpic = (i) => {
-  return (dispatch) => {
-    const user = /* getCacheObject */ SESSION_KEY_NAME;
-    dispatch(request_start());
-    axios
-      .post(ServiceUrls.UPLOAD_PIC, i, {
-        headers: { "access-token": user["access-token"] },
-      })
-      .then((res) => {
-        let resCode = res.data.status;
-        if (resCode === 200) {
-          dispatch(updateuserpicdetails(res.data.response));
-        } else {
-          dispatch(request_fail(res.data.response.message));
-        }
-      })
-      .catch((err) => {
-        dispatch(request_fail(err.message));
-      });
-  };
-};
+                let resCode = res.data.code;
+                // console.log(resCode)
+                // console.log("sucess 200", resCode)
+                if (resCode == 200) {
+                    console.log("sucess 2000", resCode)
+                    dispatch(requestSuccess(res.data.data));
+                    // this.props.getuser();
+                } else {
+                    dispatch(requestFailure(res.data.response.message));
+                }
 
-export const uploadpicfetch = (i) => {
-  return (dispatch) => {
-    const user = /* getCacheObject */ SESSION_KEY_NAME;
-    dispatch(request_start());
-    fetch(ServiceUrls.UPLOAD_PIC, {
-      method: "post",
-      headers: new Headers({
-        "access-token": user["access-token"],
-      }),
-      body: i,
+            })
+            .catch(err => {
+                console.log("err>>>>", err)
+                dispatch(requestFailure(err.message));
+            });
+    };
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+export const getuser =(user)=>{
+  return dispatch =>{
+    const userinfo=getCacheObject (SESSION_KEY_NAME)
+    console.log(userinfo)
+     console.log(">>",ServiceUrls.GET_CLUB_BY_ID, user);
+
+    dispatch(getrequeststarted());
+    axios.post(ServiceUrls.GET_CLUB_BY_ID, user,{ headers: { "Authorization": "Bearer "+userinfo['token'] }})
+    .then(res=>{
+      let resCode = res.status;
+      console.log(resCode);
+      console.log(res)
+      if(resCode == 200){
+        console.log("sucess 2000", resCode)
+      
+      dispatch(getrequestSuccess(res.data.data.data));
+       } else {
+        dispatch(getrequestFailure(res.data.response.message));
+    }
     })
-      .then((res) => {
-        console.log("pic info", res);
-        let resCode = res.data.status;
-        if (resCode === 200) {
-          dispatch(updateuserpicdetails(res.data.response));
-        } else {
-          dispatch(request_fail(res.data.response.message));
-        }
-      })
-      .catch((err) => {
-        dispatch(request_fail(err.message));
-      });
+    .catch(err => {
+      dispatch(getrequestFailure(err.message))
+    }) 
   };
-};
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const deleteclub = (i) => {
-  return (dispatch) => {
-    const user = /* getCacheObject */ SESSION_KEY_NAME;
-    dispatch(request_start());
-    axios
-      .post(ServiceUrls.DELETE_CLUB_BY_ID, i, {
-        headers: { "access-token": user["access-token"] },
-      })
-      .then((res) => {
-        let resCode = res.data.status;
-        if (resCode === 200) {
-          dispatch(request_delete_club_success(res.data.response));
-        } else {
-          dispatch(request_fail(res.data.response.message));
-        }
-      })
-      .catch((err) => {
-        dispatch(request_fail(err.message));
-      });
-  };
-};
+export const deleteuser =(user)=>{
+    return dispatch =>{
+    const userinfo=getCacheObject (SESSION_KEY_NAME)
 
-export const page_refresh = () => {
-  return (dispatch) => {
-    dispatch(pagerefresh());
-  };
-};
+        dispatch(deleterequeststarted())
+        axios.post(ServiceUrls.DELETE_CLUB_BY_ID,user,{ headers: { "Authorization": "Bearer "+userinfo['token'] }})
+        .then (res=>{
+            console.log(res.status)
+            console.log(res.data.code)
 
-export const club_page_refresh = () => {
-  return (dispatch) => {
-    dispatch(pagerefresh());
-  };
-};
+            let resCode=res.data.code;
+            if(resCode === 200){
+                dispatch(deleterequestsuccess(res.data.data));
+            }else{
+                dispatch(deleterequestfailure(res.data.response.message))
+            }
+        }).catch(err => {
+            dispatch(deleterequestfailure(err.message))
+          }) 
+    }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const getclubinfo = (i) => {
+    return dispatch => {
+        const userinfo=getCacheObject (SESSION_KEY_NAME)
+
+        dispatch(getclubinforequest_start());
+        axios.post(ServiceUrls.GET_CLUB, i,{ headers: { "Authorization": "Bearer "+userinfo['token'] }})
+            .then(res => {
+                console.log("get>>", res.data.data);
+            //  this.userinfo.name = res.data.data.clubname;
+                let resCode = res.data.code;
+                if (resCode === 200) {
+                    dispatch(getclubinforequest_success(res.data.data));
+                } else {
+                    dispatch(getclubinforequest_fail(res.data.message));
+                }
+
+            })
+            .catch(err => {
+                dispatch(getclubinforequest_fail(err.message));
+            });
+    };
+    
+
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const updateclub = (i) => {
+    console.log(i)
+    return dispatch => {
+        const userinfo=getCacheObject (SESSION_KEY_NAME)
+
+        dispatch(updaterequest_start());
+        // {
+        //     "_id": "5f34d42d2ee6da29f002629a",
+        //     "email": "abc12@yopmail.com",
+        //     "mobileno": 9573426859,
+        //     "clubname": "abc",
+        //     "clubtype": 1,
+        //     "clublocation": "Hyderabad"
+        // }
+
+        axios.post(ServiceUrls.UPDATE_CLUB_BY_ID, i,{ headers: { "Authorization": "Bearer "+userinfo['token'] }})
+            .then(res => {
+                console.log("get>>", res);
+            //  this.userinfo.name = res.data.data.clubname;
+                let resCode = res.data.code;
+                if (resCode === 200) {
+                    dispatch(updaterequest_success(res.data.data.data));
+                } else {
+                    dispatch(updaterequest_fail(res.data.message));
+                }
+
+            })
+            .catch(err => {
+                dispatch(updaterequest_fail(err.message));
+            });
+    };
+    
+
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const setdata = (i) => {
-  return (dispatch) => {
-    dispatch(setdataToredux(i));
-  };
-};
+    return dispatch => {
+        dispatch(setdataToredux(i));
+    };
+}
 
-export const errormsg = (msg) => {
-  return (dispatch) => {
-    dispatch(request_fail(msg));
-  };
-};
+export const error = (msg) => {
+    return dispatch => {
+        dispatch(requestFailure(msg));
+    };
+}
 
-export const setpopupmsg = (msg) => {
-  return (dispatch) => {
-    dispatch(setpopuperror_msg(msg));
-  };
-};
+export const validateform = (i) => {
+    return dispatch => {
+        dispatch(validate(i));
+    };
+  }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const request_start = () => ({
-  type: ClubsActionTypes.CLUBS_DETAILS_REQUEST_START,
+const requeststarted = () => ({
+    type: clubsActionTypes.CLUBS_DETAILS_REQUEST_START
 });
-const request_success = (data, search_data) => ({
-  type: ClubsActionTypes.CLUBS_DETAILS_REQUEST_SUCCESS,
-  payload: data,
-  searchInfo: search_data,
+const requestSuccess = (data) => ({
+    type: clubsActionTypes.CLUBS_DETAILS_REQUEST_SUCCESS,
+    payload: data
 });
-
-const request_delete_club_success = (data) => ({
-  type: ClubsActionTypes.DELETE_CLUBS_REQUEST_SUCCESS,
-  payload: data,
+const requestFailure =(data)=>({
+    type: clubsActionTypes.CLUBS_DETAILS_REQUEST_FAIL,
+    payload: data
+})
+const getrequeststarted = () => ({
+    type: clubsActionTypes.GET_CLUBS_DETAILS_REQUEST_START
 });
-
-const request_add_clubs_success = (data) => ({
-  type: ClubsActionTypes.ADD_CLUBS_DETAILS_REQUEST_SUCCESS,
-  payload: data,
+const getrequestSuccess = (data) => ({
+    type: clubsActionTypes.GET_CLUBS_DETAILS_REQUEST_SUCCESS,
+    payload: data
 });
-
-const request_fail = (data) => ({
-  type: ClubsActionTypes.CLUBS_DETAILS_REQUEST_FAIL,
-  payload: data,
-});
-
+const getrequestFailure =(data)=>({
+    type: clubsActionTypes.GET_CLUBS_DETAILS_REQUEST_FAIL,
+    payload: data
+})
+const deleterequeststarted =(data)=>({
+    type: clubsActionTypes.DELETE_REQUEST_START,
+    payload: data
+})
+const deleterequestsuccess =(data)=>({
+    type: clubsActionTypes.DELETE_REQUEST_SUCCESS,
+    payload: data
+})
+const deleterequestfailure =(data)=>({
+    type: clubsActionTypes.DELETE_REQUEST_FAILURE,
+    payload: data
+})
+const updaterequeststarted =(data)=>({
+    type: clubsActionTypes.UPDATE_REQUEST_START,
+    payload: data
+})
+const updaterequestsuccess =(data)=>({
+    type: clubsActionTypes.UPDATE_REQUEST_SUCCESS,
+    payload: data
+})
+const updaterequestfailure =(data)=>({
+    type: clubsActionTypes.UPDATE_REQUEST_FAILURE,
+    payload: data
+})
 const setdataToredux = (data) => ({
-  type: ClubsActionTypes.SET_CLUB_DETAILS,
-  payload: data,
+    type: clubsActionTypes.SET_CLUB_DETAILS,
+    payload: data
+})
+
+
+const getclubinforequest_start = () => ({
+    type: clubsActionTypes.GET_CLUBS_REQUEST_START
+});
+const getclubinforequest_success = (data) => ({
+    type: clubsActionTypes.GET_CLUBS_DELTAILS,
+    payload: data
+});
+const getclubinforequest_fail =(data)=>({
+    type: clubsActionTypes.GET_CLUBS_REQUEST_FAILURE,
+    payload: data
+})
+
+
+const updaterequest_start=()=>({
+    type:clubsActionTypes.UPDATE_CLUBS_REQUEST_START,
+});
+const updaterequest_success=(data)=>({
+    type:clubsActionTypes.UPDATE_CLUBS_REQUEST_SUCCESS,
+    payload: data
+
+});
+const updaterequest_fail=(data)=>({
+    type:clubsActionTypes.UPDATE_CLUBS_REQUEST_FAILURE,
+    payload: data
+
 });
 
-const pagerefresh = () => ({
-  type: ClubsActionTypes.CLUBS_DETAILS_PAGE_RESET,
-});
-
-const setpopuperror_msg = (data) => ({
-  type: ClubsActionTypes.CLUBS_DETAILS_POPUP_BOX_ERROR_MESSAGE,
-  payload: data,
-});
-
-const updateClubDetails = (data) => ({
-  type: ClubsActionTypes.UPDATE_CLUBS_DETAILS_REQUEST_SUCCESS,
-  payload: data,
-});
-
-const updateuserpicdetails = (data) => ({
-  type: ClubsActionTypes.UPDATE_PIC_INFO,
-  payload: data,
-});
+const validate = (data) => ({
+    type: clubsActionTypes.VALIDATE_DETAILS,
+    payload: data
+  });

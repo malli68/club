@@ -1,11 +1,11 @@
 import LoginActionTypes from "../actionCreators/LoginActoinTypes";
-// import { setCacheObject, getCacheObject } from '../../helpers/globalHelpers/GlobalHelperFunctions';
+ import { setCacheObject, getCacheObject } from '../../helpers/globalHelpers/GlobalHelperFunctions';
 import config from "../../../config";
 const LOGIN_USER_NAME = config.LOGIN_USER_NAME;
 
 const INITIAL_STATE = {
   /* user: null, */
-  username: /* getCacheObject */ LOGIN_USER_NAME,
+  username: /* getCacheObject */  LOGIN_USER_NAME ,
   error: "",
   loading: false,
   isUserLogIn: false,
@@ -32,6 +32,30 @@ export default (state = INITIAL_STATE, action) => {
         error: action.payload,
         isUserLogIn: false,
       };
+
+//addition////////////////////////////////
+
+case LoginActionTypes.USER_LOGIN_REQUEST_START:
+      return { ...state, loading: true, isUserLogIn: false };
+
+    case LoginActionTypes.USER_LOGIN_REQUEST_SUCCESS:
+      console.log("hiiiiiiiiiii");
+      return {
+        ...state,
+        loading: false,
+        user: action.payload,
+        isUserLogIn: true,
+      };
+
+    case LoginActionTypes.USER_LOGIN_REQUEST_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+        isUserLogIn: false,
+      };
+
+////////////////////////////////////////
 
     case LoginActionTypes.SET_USER_INFO:
       return { ...state, ...INITIAL_STATE, user: action.payload, error: "" };

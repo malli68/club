@@ -4,20 +4,21 @@ import ServiceUrls from "../../helpers/ServiceUrls";
 
 export const loginUser = (user) => {
   return (dispatch) => {
-    dispatch(loginrequeststarted());
-    axios
-      .post(ServiceUrls.USER_LOGIN, user)
+    dispatch(userloginrequeststarted());
+    axios.post(ServiceUrls.USER_LOGIN, user)
       .then((res) => {
+        console.log("HIIIIIII")
+        console.log(res)
         let resCode = res.data.code;
 
         if (resCode === 200) {
-          dispatch(loginrequestSuccess(res.data));
+          dispatch(userloginrequestSuccess(res.data));
         } else {
-          dispatch(loginrequestFailure(res.data.message));
+          dispatch(userloginrequestFailure(res.data.message));
         }
       })
       .catch((err) => {
-        dispatch(loginrequestFailure(err.message));
+        dispatch(userloginrequestFailure(err.message));
       });
   };
 };
@@ -31,11 +32,11 @@ export const login = (user) => {
       .post(ServiceUrls.LOGIN, user)
       .then((res) => {
         //changes
-        console.log(">>", res);
+        console.log(">>", res.data.data);
         let resCode = res.data.code;
-        console.log(res.data);
+        console.log(res);
         if (resCode === 200) {
-          dispatch(loginrequestSuccess(res.data.code));
+          dispatch(loginrequestSuccess(res.data.data));
         } else {
           dispatch(loginrequestFailure(res.data.response.message));
         }
@@ -77,6 +78,17 @@ const loginrequestSuccess = (data) => ({
 });
 const loginrequestFailure = (data) => ({
   type: LoginActionTypes.ON_LOGIN_REQUEST_FAIL,
+  payload: data,
+});
+const userloginrequeststarted = () => ({
+  type: LoginActionTypes.USER_LOGIN_REQUEST_START,
+});
+const userloginrequestSuccess = (data) => ({
+  type: LoginActionTypes.USER_LOGIN_REQUEST_SUCCESS,
+  payload: data,
+});
+const userloginrequestFailure = (data) => ({
+  type: LoginActionTypes.USER_LOGIN_REQUEST_FAIL,
   payload: data,
 });
 const setresetlogininfo = () => ({

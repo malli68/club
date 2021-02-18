@@ -223,7 +223,7 @@ export class Header extends Component {
                       Lock screen
                     </a>
                     <div className="dropdown-divider"></div>
-                    <a className="dropdown-item text-danger" href="#">
+                    <a className="dropdown-item text-danger" href="/">
                       <i className="bx bx-power-off font-size-16 align-middle mr-1 text-danger"></i>{" "}
                       Logout
                     </a>
