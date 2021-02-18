@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const ValidationActionTypes = {
   VALIDATION_REQUEST_START: "VALIDATION_REQUEST_START",
   VALIDATION_REQUEST_SUCCESS: "VALIDATION_REQUEST_SUCCESS",
@@ -6,3 +7,14 @@ const ValidationActionTypes = {
 };
 
 export default ValidationActionTypes;
+=======
+const ValidationActionTypes = {
+  VALIDATION_REQUEST_START: "VALIDATION_REQUEST_START",
+  VALIDATION_REQUEST_SUCCESS: "VALIDATION_REQUEST_SUCCESS",
+  VALIDATION_REQUEST_FAIL: "VALIDATION_REQUEST_FAIL",
+  RESET_VALIDATION_DATA: "RESET_VALIDATION_DATA",
+};
+
+export default ValidationActionTypes;
+
+>>>>>>> 03ffa5a12daf10079fd3ff5076f21db4c34fe44e
